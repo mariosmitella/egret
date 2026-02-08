@@ -309,6 +309,33 @@ const uint8_t our_report_descriptor_horipad[] = {
     0xC0,              // End Collection
 };
 
+const uint8_t our_report_descriptor_egret[] = {
+    0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
+    0x09, 0x04,        // Usage (Joystick)
+    0xA1, 0x01,        // Collection (Application)
+    0x15, 0x00,        //   Logical Minimum (0)
+    0x25, 0x01,        //   Logical Maximum (1)
+    0x35, 0x00,        //   Physical Minimum (0)
+    0x45, 0x01,        //   Physical Maximum (1)
+    0x75, 0x01,        //   Report Size (1)
+    0x95, 0x0C,        //   Report Count (12)
+    0x05, 0x09,        //   Usage Page (Button)F
+    0x19, 0x01,        //   Usage Minimum (0x01)
+    0x29, 0x0C,        //   Usage Maximum (0x0C)
+    0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0x95, 0x04,        //   Report Count (4)
+    0x81, 0x01,        //   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0x05, 0x01,        //   Usage Page (Generic Desktop Ctrls)
+    0x26, 0xFF, 0x00,  //   Logical Maximum (255)
+    0x46, 0xFF, 0x00,  //   Physical Maximum (255)
+    0x09, 0x30,        //   Usage (X)
+    0x09, 0x31,        //   Usage (Y)
+    0x75, 0x08,        //   Report Size (8)
+    0x95, 0x02,        //   Report Count (2)
+    0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0xC0,              // End Collection
+};
+
 uint8_t const our_report_descriptor_ps4[] = {
     0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
     0x09, 0x05,        // Usage (Game Pad)
@@ -563,8 +590,14 @@ bool kb_mouse_should_cause_wakeup(uint8_t report_id, const uint8_t* buffer, uint
 
 static const uint8_t horipad_neutral[] = { 0x00, 0x00, 0x0F, 0x80, 0x80, 0x80, 0x80, 0x00 };
 
+static const uint8_t egret_neutral[] = { 0x00, 0x00, 0x80, 0x80 };
+
 void horipad_clear_report(uint8_t* report, uint8_t report_id, uint16_t len) {
     memcpy(report, horipad_neutral, sizeof(horipad_neutral));
+}
+
+void egret_clear_report(uint8_t* report, uint8_t report_id, uint16_t len) {
+    memcpy(report, egret_neutral, sizeof(egret_neutral));
 }
 
 void ps4_clear_report(uint8_t* report, uint8_t report_id, uint16_t len) {
@@ -587,6 +620,20 @@ void xac_compat_clear_report(uint8_t* report, uint8_t report_id, uint16_t len) {
 }
 
 int32_t horipad_default_value(uint32_t usage) {
+    switch (usage) {
+        case 0x00010039:
+            return 15;
+        case 0x00010030:
+        case 0x00010031:
+        case 0x00010032:
+        case 0x00010035:
+            return 0x80;
+        default:
+            return 0;
+    }
+}
+
+int32_t egret_default_value(uint32_t usage) {
     switch (usage) {
         case 0x00010039:
             return 15;
@@ -695,6 +742,16 @@ const our_descriptor_def_t our_descriptors[] = {
         .handle_received_report = do_handle_received_report,
         .clear_report = xac_compat_clear_report,
         .default_value = ps4_stadia_default_value,  // sic
+    },
+    {
+        .idx = 6,
+        .descriptor = our_report_descriptor_egret,
+        .descriptor_length = sizeof(our_report_descriptor_egret),
+        .vid = 0x0AE4,
+        .pid = 0x0702,
+        .handle_received_report = do_handle_received_report,
+        .clear_report = egret_clear_report,
+        .default_value = egret_default_value,
     },
 };
 
