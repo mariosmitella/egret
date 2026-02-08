@@ -268,21 +268,23 @@ const uint8_t our_report_descriptor_absolute[] = {
 };
 
 const uint8_t our_report_descriptor_horipad[] = {
+    // header
     0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
     0x09, 0x04,        // Usage (Joystick)
     0xA1, 0x01,        // Collection (Application)
-    0x15, 0x00,        //   Logical Minimum (0)
-    0x25, 0x01,        //   Logical Maximum (1)
-    0x35, 0x00,        //   Physical Minimum (0)
-    0x45, 0x01,        //   Physical Maximum (1)
-    0x75, 0x01,        //   Report Size (1)
-    0x95, 0x0C,        //   Report Count (12)
-    0x05, 0x09,        //   Usage Page (Button)F
-    0x19, 0x01,        //   Usage Minimum (0x01)
-    0x29, 0x0C,        //   Usage Maximum (0x0C)
-    0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-    0x95, 0x04,        //   Report Count (4)
-    0x81, 0x01,        //   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
+
+    // 16 buttons (captures C button and removes 4-bit padding)
+    0x05, 0x09,        // Usage Page (Button)
+    0x19, 0x01,        // Usage Minimum (1)
+    0x29, 0x10,        // Usage Maximum (16)
+    0x15, 0x00,        // Logical Minimum (0)
+    0x25, 0x01,        // Logical Maximum (1)
+    0x95, 0x10,        // Report Count (16)
+    0x75, 0x01,        // Report Size (1)
+    0x81, 0x02,        // Input (Data,Var,Abs)
+
+
+    // sticks
     0x05, 0x01,        //   Usage Page (Generic Desktop Ctrls)
     0x26, 0xFF, 0x00,  //   Logical Maximum (255)
     0x46, 0xFF, 0x00,  //   Physical Maximum (255)
@@ -291,6 +293,8 @@ const uint8_t our_report_descriptor_horipad[] = {
     0x75, 0x08,        //   Report Size (8)
     0x95, 0x02,        //   Report Count (2)
     0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+
+    // footer
     0xC0,              // End Collection
 };
 
